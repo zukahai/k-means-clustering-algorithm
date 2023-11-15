@@ -4,7 +4,7 @@ import math
 import random
 import matplotlib.pyplot as plt
 
-class HeartKNN:
+class Iris_KNN:
     def __init__(self, k=3):
         self.k = k
         self.file_path = "./datasets/iris.csv"
@@ -16,9 +16,8 @@ class HeartKNN:
             self.data[i]["PetalLengthCm"] = float(self.data[i]["PetalLengthCm"])
             self.data[i]["PetalWidthCm"] = float(self.data[i]["PetalWidthCm"])
 
-
+    def init_centers(self):
         random_centers = random.sample(self.data, self.k)
-
         self.clusters = []
         for i in range(self.k):
             elements = [random_centers[i]]
@@ -32,13 +31,9 @@ class HeartKNN:
                 }
             })
 
-    def calculate_distance(self, a, b):
-        distance = 0
-        for i in a.keys():
-            distance += (float(a[i]) - float(b[i])) ** 2
-        return math.sqrt(distance)
-    
     def solve(self):
+        self.init_centers()
+
         for i in range(self.k, len(self.data)):
             index_cluster = 0
             min_distance = 10**10
@@ -52,6 +47,12 @@ class HeartKNN:
             self.clusters[index_cluster]["elements"].append(self.data[i])
             self.reset_center(index_cluster)
 
+    def calculate_distance(self, a, b):
+        distance = 0
+        for i in a.keys():
+            distance += (float(a[i]) - float(b[i])) ** 2
+        return math.sqrt(distance)
+    
     def reset_center(self, index_cluster):
         elements = self.clusters[index_cluster]["elements"]
         new_center = {
@@ -70,8 +71,10 @@ class HeartKNN:
         self.clusters[index_cluster]["center"] = new_center
             
     def print_clusters(self):
-        for cluster in self.clusters:
-            print(len(cluster["elements"]))
+        len_clusters = [len(cluster["elements"]) for cluster in self.clusters]
+        for index, cluster in enumerate(self.clusters):
+            print(f"Cluster {index + 1}: {len(cluster['elements'])} elements")
+        return len_clusters
 
     def draw_clusters(self):
         list_color = ["green", "blue", "orange", "magenta", "black", "cyan", "purple", "yellow"]
@@ -103,7 +106,7 @@ class HeartKNN:
     
 if __name__ == "__main__":
     clusters = 3
-    heart = HeartKNN(k=clusters)
-    heart.solve()
-    heart.print_clusters()
-    heart.draw_clusters()
+    iris_kmeans = Iris_KNN(k=clusters)
+    iris_kmeans.solve()
+    iris_kmeans.print_clusters()
+    iris_kmeans.draw_clusters()

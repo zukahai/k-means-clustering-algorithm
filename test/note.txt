@@ -1,0 +1,5 @@
+ while True:
+    lenths = self.print_clusters()
+    if min(lenths) > max(lenths) / 3:
+        break
+    self.solve()
