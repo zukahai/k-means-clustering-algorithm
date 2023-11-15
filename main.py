@@ -13,6 +13,9 @@ class HeartKNN:
         for i in range(len(self.data)):
             self.data[i]["SepalLengthCm"] = float(self.data[i]["SepalLengthCm"])
             self.data[i]["SepalWidthCm"] = float(self.data[i]["SepalWidthCm"])
+            self.data[i]["PetalLengthCm"] = float(self.data[i]["PetalLengthCm"])
+            self.data[i]["PetalWidthCm"] = float(self.data[i]["PetalWidthCm"])
+
 
         random_centers = random.sample(self.data, self.k)
 
@@ -24,6 +27,8 @@ class HeartKNN:
                 "center": {
                     "SepalLengthCm": self.data[i]["SepalLengthCm"],
                     "SepalWidthCm": self.data[i]["SepalWidthCm"],
+                    "PetalLengthCm": self.data[i]["PetalLengthCm"],
+                    "PetalWidthCm": self.data[i]["PetalWidthCm"]
                 }
             })
 
@@ -51,13 +56,17 @@ class HeartKNN:
         elements = self.clusters[index_cluster]["elements"]
         new_center = {
             "SepalLengthCm": 0,
-            "SepalWidthCm": 0
+            "SepalWidthCm": 0,
+            "PetalLengthCm": 0,
+            "PetalWidthCm": 0
         }
         for element in elements:
-            new_center["SepalLengthCm"] += element['SepalLengthCm']
-            new_center["SepalWidthCm"] += element['SepalWidthCm']
-        new_center["SepalLengthCm"] /= len(elements)
-        new_center["SepalWidthCm"] /= len(elements)
+            for key in new_center.keys():
+                new_center[key] += element[key]
+        
+        for key in new_center.keys():
+            new_center[key] /= len(elements)
+
         self.clusters[index_cluster]["center"] = new_center
             
     def print_clusters(self):
