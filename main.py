@@ -4,32 +4,31 @@ import math
 import random
 import matplotlib.pyplot as plt
 
-class Iris_KNN:
-    def __init__(self, k=3):
+class KMeans:
+    def __init__(self, k=3, columns=4, file_path="./datasets/iris.csv"):
+        self.k = k
+        self.columns = columns
+        self.file_path = file_path
+        self.data = self.csv_to_json(self.file_path)
+        self.columns = columns
         self.k = k
         self.file_path = "./datasets/iris.csv"
         self.data = self.csv_to_json(self.file_path)
 
         for i in range(len(self.data)):
-            self.data[i]["SepalLengthCm"] = float(self.data[i]["SepalLengthCm"])
-            self.data[i]["SepalWidthCm"] = float(self.data[i]["SepalWidthCm"])
-            self.data[i]["PetalLengthCm"] = float(self.data[i]["PetalLengthCm"])
-            self.data[i]["PetalWidthCm"] = float(self.data[i]["PetalWidthCm"])
+            for col in self.columns:
+                self.data[i][col] = float(self.data[i][col])
 
     def init_centers(self):
         random_centers = random.sample(self.data, self.k)
         self.clusters = []
         for i in range(self.k):
             elements = [random_centers[i]]
-            self.clusters.append({
+            cluster = {
                 "elements": elements,
-                "center": {
-                    "SepalLengthCm": self.data[i]["SepalLengthCm"],
-                    "SepalWidthCm": self.data[i]["SepalWidthCm"],
-                    "PetalLengthCm": self.data[i]["PetalLengthCm"],
-                    "PetalWidthCm": self.data[i]["PetalWidthCm"]
-                }
-            })
+                "center": elements[0]
+            }
+            self.clusters.append(cluster)
 
     def solve(self):
         self.init_centers()
@@ -49,18 +48,15 @@ class Iris_KNN:
 
     def calculate_distance(self, a, b):
         distance = 0
-        for i in a.keys():
+        for i in self.columns:
             distance += (float(a[i]) - float(b[i])) ** 2
         return math.sqrt(distance)
     
     def reset_center(self, index_cluster):
         elements = self.clusters[index_cluster]["elements"]
-        new_center = {
-            "SepalLengthCm": 0,
-            "SepalWidthCm": 0,
-            "PetalLengthCm": 0,
-            "PetalWidthCm": 0
-        }
+        new_center = {}
+        for col in self.columns:
+            new_center[col] = 0
         for element in elements:
             for key in new_center.keys():
                 new_center[key] += element[key]
@@ -82,19 +78,19 @@ class Iris_KNN:
         for index in range(len(self.clusters)):
             random_color = "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
             color = random_color if index >= len(list_color) else list_color[index]
-            x = [x['SepalLengthCm'] for x in self.clusters[index]["elements"]]
-            y = [y['SepalWidthCm'] for y in self.clusters[index]["elements"]]
+            x = [x[self.columns[0]] for x in self.clusters[index]["elements"]]
+            y = [y[self.columns[1]] for y in self.clusters[index]["elements"]]
             plt.scatter(x, y, color=color)
 
         # Vẽ K điểm center
-        x = [x['center']['SepalLengthCm'] for x in self.clusters]
-        y = [y['center']['SepalWidthCm'] for y in self.clusters]
+        x = [x['center'][self.columns[0]] for x in self.clusters]
+        y = [y['center'][self.columns[1]] for y in self.clusters]
         plt.scatter(x, y, color="red", marker='X', s=200)
 
 
-        plt.xlabel('Sepal Length (cm)')
-        plt.ylabel('Sepal Width (cm)')
-        plt.title('K-Means Clustering of Iris Dataset')
+        plt.xlabel(self.columns[0])
+        plt.ylabel(self.columns[1])
+        plt.title('K-Means Clustering')
         plt.show()
 
 
@@ -106,7 +102,8 @@ class Iris_KNN:
     
 if __name__ == "__main__":
     clusters = 3
-    iris_kmeans = Iris_KNN(k=clusters)
+    cloumns = ["SepalLengthCm", 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm']
+    iris_kmeans = KMeans(k=clusters, columns=cloumns)
     iris_kmeans.solve()
     iris_kmeans.print_clusters()
     iris_kmeans.draw_clusters()
