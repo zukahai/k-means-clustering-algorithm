@@ -74,6 +74,9 @@ class App:
             columns = self.get_csv_columns(file_path)
             for column in columns:
                 self.column_listbox.insert(tk.END, column)
+        # Đổi tên nút thành tên file đang chọn
+        name_file = file_path.split("/")[-1]
+        self.file_button.config(text=name_file)
 
     def get_csv_columns(self, file_path):
         df = pd.read_csv(file_path)

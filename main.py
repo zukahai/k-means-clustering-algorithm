@@ -5,14 +5,13 @@ import random
 import matplotlib.pyplot as plt
 
 class KMeans:
-    def __init__(self, k=3, columns=4, file_path="./datasets/iris.csv"):
+    def __init__(self, k=3, columns=[], file_path="./datasets/iris.csv"):
         self.k = k
         self.columns = columns
         self.file_path = file_path
+        print("file_path: ", self.file_path)
         self.data = self.csv_to_json(self.file_path)
-        self.columns = columns
         self.k = k
-        self.file_path = "./datasets/iris.csv"
         self.data = self.csv_to_json(self.file_path)
 
         for i in range(len(self.data)):
@@ -74,22 +73,26 @@ class KMeans:
 
     def draw_clusters(self):
         list_color = ["green", "blue", "orange", "magenta", "black", "cyan", "purple", "yellow"]
+
+        name_columns = random.sample(self.columns, 2)
+        
+
         # vẽ K nhóm
         for index in range(len(self.clusters)):
             random_color = "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
             color = random_color if index >= len(list_color) else list_color[index]
-            x = [x[self.columns[0]] for x in self.clusters[index]["elements"]]
-            y = [y[self.columns[1]] for y in self.clusters[index]["elements"]]
+            x = [x[name_columns[0]] for x in self.clusters[index]["elements"]]
+            y = [y[name_columns[1]] for y in self.clusters[index]["elements"]]
             plt.scatter(x, y, color=color)
 
         # Vẽ K điểm center
-        x = [x['center'][self.columns[0]] for x in self.clusters]
-        y = [y['center'][self.columns[1]] for y in self.clusters]
+        x = [x['center'][name_columns[0]] for x in self.clusters]
+        y = [y['center'][name_columns[1]] for y in self.clusters]
         plt.scatter(x, y, color="red", marker='X', s=200)
 
 
-        plt.xlabel(self.columns[0])
-        plt.ylabel(self.columns[1])
+        plt.xlabel(name_columns[0])
+        plt.ylabel(name_columns[1])
         plt.title('K-Means Clustering')
         plt.show()
 
